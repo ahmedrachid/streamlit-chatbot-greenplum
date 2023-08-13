@@ -74,7 +74,6 @@ CREATE OR REPLACE FUNCTION ask_openai(user_input text)
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
     search_string = user_input
-    --docs_text = document
 
     messages = [{"role": "system",
                   "content": "You concisely answer questions based on text that is provided to you."}]
