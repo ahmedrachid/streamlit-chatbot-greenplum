@@ -62,6 +62,36 @@ return embedding
 
 $$ LANGUAGE PLPYTHON3U;
 
+
+-- this method will take 1 parameter. It replies on openAI existing knowledge base.
+CREATE OR REPLACE FUNCTION ask_openai(user_input text)
+  RETURNS TEXT
+  AS
+  $$
+
+    import openai
+    import os
+
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    search_string = user_input
+
+    messages = [{"role": "system",
+                  "content": "You concisely answer questions based on text that is provided to you."}]
+
+    prompt = """Answer the user's prompt or question:
+
+    {search_string}
+
+    Keep your answer direct and concise. Provide code snippets where applicable.""".format(search_string=search_string)
+
+    messages.append({"role": "user", "content": prompt})
+
+    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    return response.choices[0]["message"]["content"]
+
+  $$ LANGUAGE PLPYTHON3U;
+
+
 CREATE FUNCTION ask_openai(user_input text, document text)
 RETURNS TEXT
 AS
